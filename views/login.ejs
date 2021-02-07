@@ -13,10 +13,11 @@
 </head>
 
 <body>
-	<h1>Login</h1>
+	
 	<div class="container" id="container">
 		<div class="form-container sign-up-container">
-			<div id="signup-error"> <%= data.name %>  </div>
+			<div id="signup-error"> </div>
+			 
 			<form action="/register" method="POST">
 				<h1>Create Account</h1>
 				<div class="social-container">
@@ -41,6 +42,10 @@
 				<% if (messages.error) { %>
 					<%-  messages.error %>
 				<% } %>
+
+				<% if(issue){ %> 
+					<p style="text-align: center;font-size: large;border: 1px solid black;border-radius: 10px;margin: 0 20px;">Error:An account with email: <%= beta.email%> already exsists </p>
+					<% } %>
 			</p>
 			<form action="/login" method="POST">
 				<h1>Sign in</h1>
