@@ -12,6 +12,7 @@ const session = require('express-session')
 const methodOverride = require('method-override')
 
 const initializePassport = require('./passport-config')
+// const us=require('./public/js-user')
 initializePassport(
   passport,
   email => users.find(user => user.email === email),
@@ -20,9 +21,11 @@ initializePassport(
 
 const users = []
 
-app.use(express.static(path.join(__dirname,'public')))
+app.use(express.static(path.join(__dirname, 'public')))
 app.set('view-engine', 'ejs')
-app.use(express.urlencoded({ extended: false }))
+app.use(express.urlencoded({
+  extended: false
+}))
 app.use(flash())
 app.use(session({
   secret: process.env.SESSION_SECRET,
@@ -34,12 +37,15 @@ app.use(passport.session())
 app.use(methodOverride('_method'))
 
 app.get('/', checkAuthenticated, (req, res) => {
-  res.render('index.ejs', { name: req.user.name })
+  res.render('index.ejs')
 })
 
 app.get('/login', checkNotAuthenticated, (req, res) => {
-  res.render('login.ejs')
+  let data={name:'damin'}
+  res.render('login',{data})
 })
+
+
 
 app.post('/login', checkNotAuthenticated, passport.authenticate('local', {
   successRedirect: '/',
@@ -47,24 +53,35 @@ app.post('/login', checkNotAuthenticated, passport.authenticate('local', {
   failureFlash: true
 }))
 
-// app.get('/register', checkNotAuthenticated, (req, res) => {
-//   res.render('register.ejs')
-// })
+
 
 app.get('/register', checkNotAuthenticated, (req, res) => {
-  res.render('login.ejs')
+  let data={name:'damin'}
+  res.render('login',{data})
 })
 
 app.post('/register', checkNotAuthenticated, async (req, res) => {
   try {
-    const hashedPassword = await bcrypt.hash(req.body.password, 10)
+    const hashedPassword = await bcrypt.hash(req.body.password, 10);
+    let flag=users.find(x=> x.name=req.body.name);
+    console.log(flag)
+    if(!flag){
     users.push({
       id: Date.now().toString(),
       name: req.body.name,
       email: req.body.email,
       password: hashedPassword
     })
-    res.redirect('/login')
+    
+    console.log('user was stored')
+    let data={name:'damin'}
+    res.render('login',{data})
+  }
+  else{
+    console.log('user wasnt stored')
+    let data={name:'damin'}
+    res.render('login',{data})
+  }
   } catch {
     res.redirect('/register')
   }
